@@ -1,0 +1,74 @@
+---
+title: "Identify Fraud from Enron Email"
+author: "Tong Li"
+date: "June 8, 2017"
+output: html_document
+---
+
+
+## Question 1: 
+Summarize for us the goal of this project and how machine learning is useful in trying to accomplish it. As part of your answer, give some background on the dataset and how it can be used to answer the project question. Were there any outliers in the data when you got it, and how did you handle those?  [relevant rubric items: "data exploration", "outlier investigation"]
+
+
+### Answer:
+The goal of this project is to find out the POI (Persons of Interest) with machine learning algorithms, using features extracted from Enron financial and email dataset. Enron Corporation was a large American energy company and went bankrupt in 2001. This large corporate bankruptcy turned out to be a big audit failure, and many senior employees were indicted, some even sentenced to prison. These senior employees who were charged with a crime or got involved in the fraud in other ways are the Persons of Interest in this project. Using proper machine learning algorithms, it is possible to identify poi from the senior employees in Enron and to know what features are most important in classifying POI and non-POI.  
+
+I found two outliers: 'TOTAL' and 'THE TRAVEL AGENCY IN THE PARK'. Neither of them represents information of any individual employee, so they were excluded from the data used in machine learning.  
+
+
+
+
+## Question 2: 
+What features did you end up using in your POI identifier, and what selection process did you use to pick them? Did you have to do any scaling? Why or why not? As part of the assignment, you should attempt to engineer your own feature that does not come ready-made in the dataset -- explain what feature you tried to make, and the rationale behind it. (You do not necessarily have to use it in the final analysis, only engineer and test it.) In your feature selection step, if you used an algorithm like a decision tree, please also give the feature importances of the features that you use, and if you used an automated feature selection function like SelectKBest, please report the feature scores and reasons for your choice of parameter values.  [relevant rubric items: "create new features", "properly scale features", "intelligently select feature"]
+
+
+### Answer:
+I used eight features in my POI identifier, i.e., 'bonus_total_ratio', 'total_stock_value', 'exercised_stock_options', 'director_fees', 'to_messages', 'from_messages', 'from_email_poi_proportion', and 'to_email_poi_proportion'. Among them, 'total_stock_value', 'exercised_stock_options', 'director_fees', 'to_messages', and 'from_messages' are originally in the dataset. They were selected in terms of the scatter plot between each of these variables and the poi variable: if the variable does not have a lot of overlap for POI (poi=True) and non-POI (poi=False). The other three are new variables. The variable 'bonus_total_ratio' was created using 'bonus' divided by 'total_payments'. I expected that POI tend to have higher bonus_total_ratio compared to non-POI. The variable 'from_email_poi_proportion' was created with 'from_this_person_to_poi' divided by 'from_messages', and similarly, 'to_email_poi_proportion' was created with 'from_poi_to_this_person' divided by 'to_messages'. I expected that POI probably have more frequent contact with other POI, and their emails with other POI should take a larger proportion among all their emails.
+
+I didn't use feature scaling for Decision Tree classifier, because Decision Tree does not trade-off between dimensions: it simply cut in one dimension and then move on to another. 
+
+(But when I tried support vector machines with the data, I scaled the features with MinMaxScaler, because the kernel methods in svm are based on distance -- we want trade-off between dimensions to get the separation line that maximaizes distance. Therefore, if we do not scale the features to comparable ranges, the features with the largest range will dominate in the calculation.)
+
+I used SelectKBest to select from the eight features. The feature scores are as follows: 'bonus_total_ratio': 18.28662924, 'total_stock_value': 8.36760516, 'exercised_stock_options': 7.59333515, 'director_fees': 1.46847817, 'to_messages': 0.61249535, 'from_messages': 0.59346814, 'from_email_poi_proportion': 14.64224193, and 'to_email_poi_proportion': 1.58387113. Among them, 'bonus_total_ratio', 'total_stock_value', 'exercised_stock_options' and 'from_email_poi_proportion' have p values smaller than 0.05, so they were used in the Decision Tree for the machine learning algorithm.
+
+  
+
+
+
+## Question 3: 
+What algorithm did you end up using? What other one(s) did you try? How did model performance differ between algorithms?  [relevant rubric item: "pick an algorithm"]
+
+
+### Answer:
+I ended up using Decision Tree classifier. I also tried SVM, GaussianNB, RandomForest, and Adaboost. The F1 scores of these five algorithms are from about 0.25 to 0.45, with GaussianNB < Adaboost < Random Forest < SVM < Decision Tree. SVM has very high precision but low recall, which is in contrast to GaussianNB which has high recall but low precision. Adaboost has relatively low values on both of the two evaluation metrics. Random Forest has a medium precision, but low recall. Decision Tree is the only one that has balanced precision and recall, both of which are medium (approximately 0.4 to 0.55).
+
+
+
+## Question 4: 
+What does it mean to tune the parameters of an algorithm, and what can happen if you don't do this well?  How did you tune the parameters of your particular algorithm? What parameters did you tune? (Some algorithms do not have parameters that you need to tune -- if this is the case for the one you picked, identify and briefly explain how you would have done it for the model that was not your final choice or a different model that does utilize parameter tuning, e.g. a decision tree classifier).  [relevant rubric item: "tune the algorithm"]
+
+### Answer:
+To tune the parameters means to try different values of certain parameters which are used in an algorithm, in order to select the best parameter combination which can generate the best classifier. If it is not done well, the classifier will be more likely to make mistakes when identify POI, which makes it less powerful. 
+
+For the final algorithm I selected which is Deicision Tree, I used GridSearchCV to tune the k value of SelectKBest to select features, and the criterion, max_depth, min_samples_split, and class_weight of Decision Tree classifier.
+
+
+## Question 5: 
+What is validation, and what's a classic mistake you can make if you do it wrong? How did you validate your analysis?  [relevant rubric item: "validation strategy"]
+
+
+### Answer:
+After the algorithm is trained, we also want to know how it preforms on some new data which is homogeneous with the train data but not exactly the same. This is because the ultimate goal of an algorithm is not to classify what we have already known as in the train set of data, but to classify or predict what we haven't known yet. Sometimes the algorithm may perform really well in train set, but it may be overfit to the train data and poor in coping with any differences. Therefore, leave part of the data out of training, and use them to validate the algorithm's ability in generalization is necessary. 
+
+A classic mistake in validation is that if the original data is ordered in terms of any variable, and when the data is split into train and test sets without shuffling, then the data in the two sets can be very different from each other, and the algorithm tuned in the train set can never generate a good prediction in test set for the two sets are simply different things. 
+
+I used StratifiedShuffleSplit to validate my algorithm. This validation will shuffle the data before split it into train and test sets, thus can avoid the mistake mentioned above.
+
+
+
+## Question 6: 
+Give at least 2 evaluation metrics and your average performance for each of them.  Explain an interpretation of your metrics that says something human-understandable about your algorithm's performance. [relevant rubric item: "usage of evaluation metrics"]
+
+
+### Answer:
+The Deicision Tree classifier gives a precision about 0.40, and a recall score about 0.50. It means that for all the individuals identified as POI by the algorithm, 40% are real POI (precision), and for all the POI in the real world, 50% of them are correctly identified by the algorithm.  
