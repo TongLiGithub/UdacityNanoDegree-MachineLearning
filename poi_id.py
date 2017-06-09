@@ -17,7 +17,6 @@ features_list = ['poi',
                  #'total_payments', 
                  #'loan_advances', 
                  #'bonus', 
-                 'salary_bonus_ratio',
                  'bonus_total_ratio',
                  #'restricted_stock_deferred', 
                  #'deferred_income', 
@@ -27,15 +26,14 @@ features_list = ['poi',
                  #'other', 
                  #'long_term_incentive', 
                  #'restricted_stock', 
-                 'director_fees', #dramatically increases recall , but precision and acc are much lower
+                 #'director_fees', 
                  #'from_poi_to_this_person', 
                 # 'from_this_person_to_poi', 
                  #'shared_receipt_with_poi',
                  'to_messages', 
                  'from_messages',
-                 'stock_ratio',
-                 'from_ratio',
-                 'to_ratio'] 
+                 'from_email_poi_proportion',
+                 'to_email_poi_proportion'] 
 
 
 ### Load the dictionary containing the dataset
@@ -43,7 +41,7 @@ with open("final_project_dataset.pkl", "r") as data_file:
     data_dict = pickle.load(data_file)
 data_dict.keys()    
 ### Task 2: Remove outliers
-#### Remove total, remove the reavel agency in the park
+#### Remove total, remove the travel agency in the park
 data_dict.pop('TOTAL',0)
 data_dict.pop('THE TRAVEL AGENCY IN THE PARK',0)
 
@@ -76,74 +74,207 @@ plt.scatter(bonus_total_ratio, data_poi)
 plt.title('bonus_total_ratio')
 
 
-#### create bonus salary ratio
-for k, v in data_dict.iteritems():
-    if v['bonus']=='NaN' or v['salary'] =='NaN':
-        v['salary_bonus_ratio']='NaN'
-    else:
-        v['salary_bonus_ratio']=float(v['salary'])/float(v['bonus'])
 
 
-salary_bonus_ratio=[]
-for point in data_dict:
-    sb_ratio = data_dict.get(point)['salary_bonus_ratio']
-    salary_bonus_ratio.append(sb_ratio)
-
-plt.scatter(salary_bonus_ratio, data_poi)
-plt.title('salary_bonus_ratio')
-
-
-
-#### create exercised-total stock ratio
-for k, v in data_dict.iteritems():
-    if v['exercised_stock_options']=='NaN' or v['total_stock_value'] =='NaN':
-        v['stock_ratio']='NaN'
-    else:
-        v['stock_ratio']=float(v['exercised_stock_options'])/float(v['total_stock_value'])
-
-
-stock_ratio=[]
-for point in data_dict:
-    st_ratio = data_dict.get(point)['stock_ratio']
-    stock_ratio.append(st_ratio)
-
-plt.scatter(stock_ratio, data_poi)
-plt.title('ex_stock_ratio')
-
-
-
-#### create proportion of from_this_person_to_poi as a percentage in from_messages
+#### create from_email_poi_proportion which indicates the proportion of from_this_person_to_poi in from_messages
 for k, v in data_dict.iteritems():
     if v['from_messages']=='NaN' or v['from_this_person_to_poi'] =='NaN':
-        v['from_ratio']='NaN'
+        v['from_email_poi_proportion']='NaN'
     else:
-        v['from_ratio']=float(v['from_this_person_to_poi'])/float(v['from_messages'])
+        v['from_email_poi_proportion']=float(v['from_this_person_to_poi'])/float(v['from_messages'])
 
 
 from_ratio=[]
 for point in data_dict:
-    fe_ratio = data_dict.get(point)['from_ratio']
+    fe_ratio = data_dict.get(point)['from_email_poi_proportion']
     from_ratio.append(fe_ratio)
+
 
 plt.scatter(from_ratio, data_poi)
 plt.title('from_email_ratio')
 
 
-#### create proportion of from_poi_to_this_person as a percentage in to_messages
+#### create to_email_poi_proportion which indicates the proportion of from_poi_to_this_person in to_messages
 for k, v in data_dict.iteritems():
     if v['to_messages']=='NaN' or v['from_poi_to_this_person'] =='NaN':
-        v['to_ratio']='NaN'
+        v['to_email_poi_proportion']='NaN'
     else:
-        v['to_ratio']=float(v['from_poi_to_this_person'])/float(v['to_messages'])
+        v['to_email_poi_proportion']=float(v['from_poi_to_this_person'])/float(v['to_messages'])
 
 
 to_ratio=[]
 for point in data_dict:
-    te_ratio = data_dict.get(point)['to_ratio']
+    te_ratio = data_dict.get(point)['to_email_poi_proportion']
     to_ratio.append(te_ratio)
 
 plt.scatter(to_ratio, data_poi)
 plt.title('to_email_ratio')
+
+
+#### examine original features with univaraite plots
+data_salary=[]
+for point in data_dict:
+    salary = data_dict.get(point)['salary']
+    data_salary.append(salary)
+
+plt.scatter(data_salary, data_poi)
+
+
+data_loan=[]
+for point in data_dict:
+    loan = data_dict.get(point)['loan_advances']
+    data_loan.append(loan)
+    
+plt.scatter(data_loan, data_poi)  
+plt.title("loan_advances & poi")  
+    
+
+data_bonus=[]
+for point in data_dict:
+    bonus = data_dict.get(point)['bonus']
+    data_bonus.append(bonus)
+    
+plt.scatter(data_bonus, data_poi)  
+plt.title("bonus & poi")  
+
+
+data_def_pay=[]
+for point in data_dict:
+    defpay = data_dict.get(point)['deferral_payments']
+    data_def_pay.append(defpay)
+    
+plt.scatter(data_def_pay, data_poi)  
+plt.title("deferral_payments & poi") 
+
+
+data_tol_pay=[]
+for point in data_dict:
+    tolpay = data_dict.get(point)['total_payments']
+    data_tol_pay.append(tolpay)
+    
+plt.scatter(data_tol_pay, data_poi)  
+plt.title("total_payments & poi") 
+
+
+data_res_sto_def=[]
+for point in data_dict:
+    ressto = data_dict.get(point)['restricted_stock_deferred']
+    data_res_sto_def.append(ressto)
+    
+plt.scatter(data_res_sto_def, data_poi)  #all pois have nan on this variable
+plt.title("restricted_stock_deferred & poi") 
+
+
+data_def_inc=[]
+for point in data_dict:
+    definc = data_dict.get(point)['deferred_income']
+    data_def_inc.append(definc)
+    
+plt.scatter(data_def_inc, data_poi)  
+plt.title("deferred_income & poi") 
+
+
+data_tol_sto=[]
+for point in data_dict:
+    tolsto = data_dict.get(point)['total_stock_value']
+    data_tol_sto.append(tolsto)
+      
+plt.scatter(data_tol_sto, data_poi)  
+plt.title("total_stock_value & poi") 
+
+
+data_exp=[]
+for point in data_dict:
+    exp = data_dict.get(point)['expenses']
+    data_exp.append(exp)
+    
+plt.scatter(data_exp, data_poi)  
+plt.title("expenses & poi") 
+
+
+data_exe_sto=[]
+for point in data_dict:
+    exesto = data_dict.get(point)['exercised_stock_options']
+    data_exe_sto.append(exesto)
+    
+plt.scatter(data_exe_sto, data_poi)  
+plt.title("exercised_stock_options & poi") 
+
+
+data_long_incen=[]
+for point in data_dict:
+    longincen = data_dict.get(point)['long_term_incentive']
+    data_long_incen.append(longincen)
+    
+plt.scatter(data_long_incen, data_poi)  
+plt.title("long_term_incentive & poi") 
+
+
+data_res_sto=[]
+for point in data_dict:
+    ressto = data_dict.get(point)['restricted_stock']
+    data_res_sto.append(ressto)
+    
+plt.scatter(data_res_sto, data_poi)  
+plt.title("restricted_stock & poi") 
+
+
+data_direc=[]
+for point in data_dict:
+    direc = data_dict.get(point)['director_fees']
+    data_direc.append(direc)
+
+plt.scatter(data_direc, data_poi)   #all pois have nan on this variable
+plt.title("director_fees & poi") 
+
+
+data_frompoi=[]
+for point in data_dict:
+    frompoi = data_dict.get(point)['from_poi_to_this_person']
+    data_frompoi.append(frompoi)
+    
+plt.scatter(data_frompoi, data_poi)  
+plt.title("from_poi_to_this_person & poi") 
+
+
+data_to=[]
+for point in data_dict:
+    to = data_dict.get(point)['to_messages']
+    data_to.append(to)
+        
+plt.scatter(data_to, data_poi)  
+plt.title("to_messages & poi") 
+
+
+data_fromme=[]
+for point in data_dict:
+    fromme = data_dict.get(point)['from_messages']
+    data_fromme.append(fromme)
+    
+    
+plt.scatter(data_fromme, data_poi)  
+plt.title("from_messages & poi") 
+
+
+data_topoi=[]
+for point in data_dict:
+    topoi = data_dict.get(point)['from_this_person_to_poi']
+    data_topoi.append(topoi)
+    
+plt.scatter(data_topoi, data_poi)  
+plt.title("from_this_person_to_poi & poi") 
+
+
+data_shared=[]
+for point in data_dict:
+    shared = data_dict.get(point)['shared_receipt_with_poi']
+    data_shared.append(shared)
+    
+plt.scatter(data_shared, data_poi)  
+plt.title("shared_receipt_with_poi & poi") 
+
+
+
 
 
 
@@ -208,9 +339,32 @@ from sklearn.model_selection import GridSearchCV
 grid_search = GridSearchCV(pipeline, param_grid=params, cv=sss, scoring='f1')
 
 grid_search.fit(features_train, labels_train)
+prediction = grid_search.predict(features_test)
+
+from sklearn.metrics import accuracy_score, precision_score, recall_score
+accuracy = accuracy_score(prediction, labels_test)
+
+precision = precision_score(prediction, labels_test) 
+recall = recall_score(prediction, labels_test) 
+
+grid_search.best_score_
 
 
 
+
+grid_search.best_estimator_
+
+select1=SelectKBest(k=4)
+select1.fit(features_train, labels_train)
+
+select1.get_support()
+select1.scores_
+select1.pvalues_
+
+# Print best estimators
+print "\n", "Best parameters are: ", grid_search.best_params_, "\n"
+print "\n", "Precision is", precision, "\n"
+print "\n", "Recall is", recall, "\n"
 
 ### Task 6: Dump your classifier, dataset, and features_list so anyone can
 ### check your results. You do not need to change anything below, but make sure
