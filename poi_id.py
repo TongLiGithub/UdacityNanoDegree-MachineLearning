@@ -12,24 +12,24 @@ from tester import dump_classifier_and_data
 ### features_list is a list of strings, each of which is a feature name.
 ### The first feature must be "poi".
 features_list = ['poi',
-                # 'salary', 
+                 'salary', 
                  #'deferral_payments', 
-                 #'total_payments', 
+                 'total_payments', 
                  #'loan_advances', 
-                 #'bonus', 
+                 'bonus', 
                  'bonus_total_ratio',
                  #'restricted_stock_deferred', 
                  #'deferred_income', 
                  'total_stock_value', 
-                 #'expenses', 
+                 'expenses', 
                  'exercised_stock_options', 
-                 #'other', 
+                 'other', 
                  #'long_term_incentive', 
-                 #'restricted_stock', 
+                 'restricted_stock', 
                  #'director_fees', 
-                 #'from_poi_to_this_person', 
-                # 'from_this_person_to_poi', 
-                 #'shared_receipt_with_poi',
+                 'from_poi_to_this_person', 
+                 'from_this_person_to_poi', 
+                 'shared_receipt_with_poi',
                  'to_messages', 
                  'from_messages',
                  'from_email_poi_proportion',
@@ -41,10 +41,34 @@ with open("final_project_dataset.pkl", "r") as data_file:
     data_dict = pickle.load(data_file)
 data_dict.keys()    
 ### Task 2: Remove outliers
+#### Find out the individual with all features are NaN
+countlist=[]
+for point in data_dict:
+    counter=0
+    for subkey in data_dict.get(point):
+        if data_dict.get(point)[subkey]=='NaN':
+            counter +=1
+    countlist.append(counter)
+            
+print countlist
+index = [i for i in range(len(countlist)) if countlist[i] == 20]
+
+value=data_dict.values()[90]
+
+
+for n, v in data_dict.iteritems():
+    if v == value:
+        print n
+        
+data_dict.pop('LOCKHART EUGENE E',0)    
+
 #### Remove total, remove the travel agency in the park
 data_dict.pop('TOTAL',0)
 data_dict.pop('THE TRAVEL AGENCY IN THE PARK',0)
 
+len(data_dict)     
+    
+    
 ### Task 3: Create new feature(s)
 #### create bonus-totalpayments ratio
 for k, v in data_dict.iteritems():
@@ -113,143 +137,207 @@ plt.title('to_email_ratio')
 
 #### examine original features with univaraite plots
 data_salary=[]
+counter=0
 for point in data_dict:
     salary = data_dict.get(point)['salary']
     data_salary.append(salary)
+    if salary=='NaN':
+        counter +=1
+print counter #49
 
 plt.scatter(data_salary, data_poi)
 
 
 data_loan=[]
+counter=0
 for point in data_dict:
     loan = data_dict.get(point)['loan_advances']
     data_loan.append(loan)
+    if loan=='NaN':
+        counter +=1
+print counter #140
     
 plt.scatter(data_loan, data_poi)  
 plt.title("loan_advances & poi")  
     
 
 data_bonus=[]
+counter=0
 for point in data_dict:
     bonus = data_dict.get(point)['bonus']
     data_bonus.append(bonus)
+    if bonus=='NaN':
+        counter +=1
+print counter #62
     
 plt.scatter(data_bonus, data_poi)  
 plt.title("bonus & poi")  
 
 
 data_def_pay=[]
+counter=0
 for point in data_dict:
     defpay = data_dict.get(point)['deferral_payments']
     data_def_pay.append(defpay)
+    if defpay=='NaN':
+        counter +=1
+print counter #105
     
 plt.scatter(data_def_pay, data_poi)  
 plt.title("deferral_payments & poi") 
 
 
 data_tol_pay=[]
+counter=0
 for point in data_dict:
     tolpay = data_dict.get(point)['total_payments']
     data_tol_pay.append(tolpay)
+    if tolpay=='NaN':
+        counter +=1
+print counter #20
     
 plt.scatter(data_tol_pay, data_poi)  
 plt.title("total_payments & poi") 
 
 
 data_res_sto_def=[]
+counter=0
 for point in data_dict:
     ressto = data_dict.get(point)['restricted_stock_deferred']
     data_res_sto_def.append(ressto)
+    if ressto=='NaN':
+        counter +=1
+print counter #126
     
 plt.scatter(data_res_sto_def, data_poi)  #all pois have nan on this variable
 plt.title("restricted_stock_deferred & poi") 
 
 
 data_def_inc=[]
+counter=0
 for point in data_dict:
     definc = data_dict.get(point)['deferred_income']
     data_def_inc.append(definc)
+    if definc=='NaN':
+        counter +=1
+print counter #95
     
 plt.scatter(data_def_inc, data_poi)  
 plt.title("deferred_income & poi") 
 
 
 data_tol_sto=[]
+counter=0
 for point in data_dict:
     tolsto = data_dict.get(point)['total_stock_value']
     data_tol_sto.append(tolsto)
+    if tolsto=='NaN':
+        counter +=1
+print counter #18
       
 plt.scatter(data_tol_sto, data_poi)  
 plt.title("total_stock_value & poi") 
 
 
 data_exp=[]
+counter=0
 for point in data_dict:
     exp = data_dict.get(point)['expenses']
     data_exp.append(exp)
+    if exp=='NaN':
+        counter +=1
+print counter #49
     
 plt.scatter(data_exp, data_poi)  
 plt.title("expenses & poi") 
 
 
 data_exe_sto=[]
+counter=0
 for point in data_dict:
     exesto = data_dict.get(point)['exercised_stock_options']
     data_exe_sto.append(exesto)
+    if exesto=='NaN':
+        counter +=1
+print counter #42
     
 plt.scatter(data_exe_sto, data_poi)  
 plt.title("exercised_stock_options & poi") 
 
 
 data_long_incen=[]
+counter=0
 for point in data_dict:
     longincen = data_dict.get(point)['long_term_incentive']
     data_long_incen.append(longincen)
+    if longincen=='NaN':
+        counter +=1
+print counter #78
     
 plt.scatter(data_long_incen, data_poi)  
 plt.title("long_term_incentive & poi") 
 
 
 data_res_sto=[]
+counter=0
 for point in data_dict:
     ressto = data_dict.get(point)['restricted_stock']
     data_res_sto.append(ressto)
+    if ressto=='NaN':
+        counter +=1
+print counter #34
     
 plt.scatter(data_res_sto, data_poi)  
 plt.title("restricted_stock & poi") 
 
 
 data_direc=[]
+counter=0
 for point in data_dict:
     direc = data_dict.get(point)['director_fees']
     data_direc.append(direc)
+    if direc=='NaN':
+        counter +=1
+print counter #127
 
 plt.scatter(data_direc, data_poi)   #all pois have nan on this variable
 plt.title("director_fees & poi") 
 
 
 data_frompoi=[]
+counter=0
 for point in data_dict:
     frompoi = data_dict.get(point)['from_poi_to_this_person']
     data_frompoi.append(frompoi)
+    if frompoi=='NaN':
+        counter +=1
+print counter #57
     
 plt.scatter(data_frompoi, data_poi)  
 plt.title("from_poi_to_this_person & poi") 
 
 
 data_to=[]
+counter=0
 for point in data_dict:
     to = data_dict.get(point)['to_messages']
     data_to.append(to)
+    if to=='NaN':
+        counter +=1
+print counter #57
         
 plt.scatter(data_to, data_poi)  
 plt.title("to_messages & poi") 
 
 
 data_fromme=[]
+counter=0
 for point in data_dict:
     fromme = data_dict.get(point)['from_messages']
     data_fromme.append(fromme)
+    if fromme=='NaN':
+        counter +=1
+print counter #57
     
     
 plt.scatter(data_fromme, data_poi)  
@@ -257,24 +345,52 @@ plt.title("from_messages & poi")
 
 
 data_topoi=[]
+counter=0
 for point in data_dict:
     topoi = data_dict.get(point)['from_this_person_to_poi']
     data_topoi.append(topoi)
+    if topoi=='NaN':
+        counter +=1
+print counter #57
     
 plt.scatter(data_topoi, data_poi)  
 plt.title("from_this_person_to_poi & poi") 
 
 
 data_shared=[]
+counter=0
 for point in data_dict:
     shared = data_dict.get(point)['shared_receipt_with_poi']
     data_shared.append(shared)
+    if shared=='NaN':
+        counter +=1
+print counter #57
+
+
+
+data_other=[]
+counter=0
+for point in data_dict:
+    other = data_dict.get(point)['other']
+    data_other.append(other)
+    if other=='NaN':
+        counter +=1
+print counter #52
     
 plt.scatter(data_shared, data_poi)  
 plt.title("shared_receipt_with_poi & poi") 
 
 
 
+data_address=[]
+counter=0
+for point in data_dict:
+    add = data_dict.get(point)['email_address']
+    data_address.append(add)
+    if add=='NaN':
+        counter +=1
+print counter #32
+    
 
 
 
@@ -310,7 +426,7 @@ estimators = [('feature_selection', select),
 # Create pipeline
 pipeline = Pipeline(estimators)
 
-params = dict(feature_selection__k=[4,5,6],
+params = dict(feature_selection__k=[5,6,7,8,9,10,11,12,13,14,15,16],
               dtc__criterion=['gini', 'entropy'],
               dtc__max_depth=[None, 1, 2, 3, 4],
               dtc__min_samples_split=[2,3,4,5],
@@ -333,7 +449,7 @@ features_train, features_test, labels_train, labels_test = \
     train_test_split(features, labels, test_size=0.3, random_state=42)
 
 from sklearn.model_selection import StratifiedShuffleSplit
-sss = StratifiedShuffleSplit()
+sss = StratifiedShuffleSplit(random_state=42)
     
 from sklearn.model_selection import GridSearchCV
 grid_search = GridSearchCV(pipeline, param_grid=params, cv=sss, scoring='f1')
@@ -354,7 +470,7 @@ grid_search.best_score_
 
 grid_search.best_estimator_
 
-select1=SelectKBest(k=4)
+select1=SelectKBest(k=12)
 select1.fit(features_train, labels_train)
 
 select1.get_support()

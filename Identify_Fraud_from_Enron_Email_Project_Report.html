@@ -129,8 +129,94 @@ $(document).ready(function () {
 <div id="answer" class="section level3">
 <h3>Answer:</h3>
 <p>The goal of this project is to find out the POI (Persons of Interest) with machine learning algorithms, using features extracted from Enron financial and email dataset. Enron Corporation was a large American energy company and went bankrupt in 2001. This large corporate bankruptcy turned out to be a big audit failure, and many senior employees were indicted, some even sentenced to prison. These senior employees who were charged with a crime or got involved in the fraud in other ways are the Persons of Interest in this project. Using proper machine learning algorithms, it is possible to identify poi from the senior employees in Enron and to know what features are most important in classifying POI and non-POI.</p>
-<p>The dataset used in this project contains financial and email information of 144 Enron employees, with 18 POI among them. Missing values exist in most of the features. More information will be given for the features I selected to use in the POI identifier later.</p>
-<p>I found two outliers: ‘TOTAL’ and ‘THE TRAVEL AGENCY IN THE PARK’. Neither of them represents information of any individual employee, so they were excluded from the data used in machine learning.</p>
+<p>The dataset used in this project contains financial and email information (20 features in total) of 144 Enron employees, with 18 POI among them. I found three outliers: ‘TOTAL’ and ‘THE TRAVEL AGENCY IN THE PARK’ which are not data of individual employee, and LOCKHART EUGENE E whose data are all missing. They were excluded from the data used in machine learning. Therefore, the final dataset used in the project contains data from 143 Enron employees.</p>
+<p>Missing values of each feature are presented in the table as follows:</p>
+<table>
+<caption>No. of Missing Values for Each Feature</caption>
+<tbody>
+<tr class="odd">
+<td align="left">salary</td>
+<td align="right">49</td>
+</tr>
+<tr class="even">
+<td align="left">deferral_payments</td>
+<td align="right">105</td>
+</tr>
+<tr class="odd">
+<td align="left">total_payments</td>
+<td align="right">20</td>
+</tr>
+<tr class="even">
+<td align="left">loan_advances</td>
+<td align="right">140</td>
+</tr>
+<tr class="odd">
+<td align="left">bonus</td>
+<td align="right">62</td>
+</tr>
+<tr class="even">
+<td align="left">restricted_stock_deferred</td>
+<td align="right">126</td>
+</tr>
+<tr class="odd">
+<td align="left">deferred_income</td>
+<td align="right">95</td>
+</tr>
+<tr class="even">
+<td align="left">total_stock_value</td>
+<td align="right">18</td>
+</tr>
+<tr class="odd">
+<td align="left">expenses</td>
+<td align="right">49</td>
+</tr>
+<tr class="even">
+<td align="left">exercised_stock_options</td>
+<td align="right">42</td>
+</tr>
+<tr class="odd">
+<td align="left">other</td>
+<td align="right">52</td>
+</tr>
+<tr class="even">
+<td align="left">long_term_incentive</td>
+<td align="right">78</td>
+</tr>
+<tr class="odd">
+<td align="left">restricted_stock</td>
+<td align="right">34</td>
+</tr>
+<tr class="even">
+<td align="left">director_fees</td>
+<td align="right">127</td>
+</tr>
+<tr class="odd">
+<td align="left">from_poi_to_this_person</td>
+<td align="right">57</td>
+</tr>
+<tr class="even">
+<td align="left">from_this_person_to_poi</td>
+<td align="right">57</td>
+</tr>
+<tr class="odd">
+<td align="left">shared_receipt_with_poi</td>
+<td align="right">57</td>
+</tr>
+<tr class="even">
+<td align="left">to_messages</td>
+<td align="right">57</td>
+</tr>
+<tr class="odd">
+<td align="left">from_messages</td>
+<td align="right">57</td>
+</tr>
+<tr class="even">
+<td align="left">email_address</td>
+<td align="right">32</td>
+</tr>
+</tbody>
+</table>
+<p>From the table, we can see that deferral_payments, loan_advances, restricted_stock_deferred, deferred_income, long_term_incentive, director_fees have many missing values, with more than 50% are missing. These features were not used in machine learning. In addition, each individual has a distinct email_address, so email_address was also excluded from the dataset used in next steps. Therefore, 13 original features were used in machine learning algorithm.</p>
 </div>
 </div>
 <div id="question-2" class="section level2">
@@ -138,11 +224,10 @@ $(document).ready(function () {
 <p>What features did you end up using in your POI identifier, and what selection process did you use to pick them? Did you have to do any scaling? Why or why not? As part of the assignment, you should attempt to engineer your own feature that does not come ready-made in the dataset – explain what feature you tried to make, and the rationale behind it. (You do not necessarily have to use it in the final analysis, only engineer and test it.) In your feature selection step, if you used an algorithm like a decision tree, please also give the feature importances of the features that you use, and if you used an automated feature selection function like SelectKBest, please report the feature scores and reasons for your choice of parameter values. [relevant rubric items: “create new features”, “properly scale features”, “intelligently select feature”]</p>
 <div id="answer-1" class="section level3">
 <h3>Answer:</h3>
-<p>I used seven features in my POI identifier, i.e., ‘bonus_total_ratio’, ‘total_stock_value’, ‘exercised_stock_options’, ‘to_messages’, ‘from_messages’, ‘from_email_poi_proportion’, and ‘to_email_poi_proportion’. Among them, ‘total_stock_value’, ‘exercised_stock_options’, ‘to_messages’, and ‘from_messages’ are originally in the dataset. They were selected in terms of the scatter plot between each of these variables and the poi variable: if the variable does not have a lot of overlap for POI (poi=True) and non-POI (poi=False). The other three are new variables. The variable ‘bonus_total_ratio’ was created using ‘bonus’ divided by ‘total_payments’. I expected that POI tend to have higher bonus_total_ratio compared to non-POI. The variable ‘from_email_poi_proportion’ was created with ‘from_this_person_to_poi’ divided by ‘from_messages’, and similarly, ‘to_email_poi_proportion’ was created with ‘from_poi_to_this_person’ divided by ‘to_messages’. I expected that POI probably have more frequent contact with other POI, and their emails with other POI should take a larger proportion among all their emails.</p>
-<p>Among the seven features, ‘exercised_stock_options’ is the only one with no missing values. To be specific, ‘bonus_total_ratio’ has 63 missing values and ‘total_stock_value’ has 19 missing values, ‘to_messages’, ‘from_messages’, ‘from_email_poi_proportion’ and ‘to_email_poi_proportion’ have 58 missing values each.</p>
-<p>I didn’t use feature scaling for Decision Tree classifier, because Decision Tree does not trade-off between dimensions: it simply cut in one dimension and then move on to another.</p>
+<p>I used 16 features in my POI identifier. There were 13 original features. The reason I selected was that they didn’t contain too many missing values (as in the answer to Question 1). In addition, I created 3 new ones, i.e., ‘bonus_total_ratio’, ‘from_email_poi_proportion’, and ‘to_email_poi_proportion’. The variable ‘bonus_total_ratio’ was created using ‘bonus’ divided by ‘total_payments’. I expected that POI tend to have higher bonus_total_ratio compared to non-POI. The variable ‘from_email_poi_proportion’ was created with ‘from_this_person_to_poi’ divided by ‘from_messages’, and similarly, ‘to_email_poi_proportion’ was created with ‘from_poi_to_this_person’ divided by ‘to_messages’. I expected that POI probably have more frequent contact with other POI, and their emails with other POI should take a larger proportion among all their emails.</p>
+<p>I didn’t use feature scaling for Decision Tree classifier which was my final selected algorithm, because Decision Tree does not trade-off between dimensions: it simply cut in one dimension and then move on to another.</p>
 <p>(But when I tried support vector machines with the data, I scaled the features with MinMaxScaler, because the kernel methods in svm are based on distance – we want trade-off between dimensions to get the separation line that maximaizes distance. Therefore, if we do not scale the features to comparable ranges, the features with the largest range will dominate in the calculation.)</p>
-<p>I used SelectKBest to select from the seven features. The feature scores are as follows: ‘bonus_total_ratio’: 4.36261288, ‘total_stock_value’: 16.3056319, ‘exercised_stock_options’: 15.3297295, ‘to_messages’: 0.382453942, ‘from_messages’: 0.0943681508, ‘from_email_poi_proportion’: 5.74486543, and ‘to_email_poi_proportion’: 0.00138845322. Among them, ‘bonus_total_ratio’, ‘total_stock_value’, ‘exercised_stock_options’ and ‘from_email_poi_proportion’ have p values smaller than 0.05, so they were used in the Decision Tree for the machine learning algorithm.</p>
+<p>I used SelectKBest to select from the 16 features. The feature scores are as follows: salary: 15.85873091, total_payments: 8.95913665, bonus: 30.72877463, bonus_total_ratio: 13.067325, total_stock_value: 10.63385205, expenses: 4.18072148, exercised_stock_options: 9.68004143, other: 3.20445914, restricted_stock: 8.05830631, from_poi_to_this_person: 4.95866668, from_this_person_to_poi: 0.11120824, shared_receipt_with_poi: 10.72257081, to_messages: 2.616183, from_messages: 0.4353741, from_email_poi_proportion: 15.83809495, to_email_poi_proportion: 0.51923117. Among them, 12 were selected by SelectKBest algorithm. The 4 features which were not selected were from_this_person_to_poi, to_messages, from_messages, to_email_poi_proportion, whose p values were larger than 0.05.</p>
 </div>
 </div>
 <div id="question-3" class="section level2">
@@ -150,7 +235,7 @@ $(document).ready(function () {
 <p>What algorithm did you end up using? What other one(s) did you try? How did model performance differ between algorithms? [relevant rubric item: “pick an algorithm”]</p>
 <div id="answer-2" class="section level3">
 <h3>Answer:</h3>
-<p>I ended up using Decision Tree classifier. I also tried SVM, GaussianNB, RandomForest, and Adaboost. The F1 scores of these five algorithms are from about 0.25 to 0.45, with GaussianNB &lt; Adaboost &lt; Random Forest &lt; SVM &lt; Decision Tree. SVM has very high precision but low recall, which is in contrast to GaussianNB which has high recall but low precision. Adaboost has relatively low values on both of the two evaluation metrics. Random Forest has a medium precision, but low recall. Decision Tree is the only one that has balanced precision and recall, both of which are medium (approximately 0.3 to 0.4).</p>
+<p>I ended up using Decision Tree classifier. I also tried SVM, GaussianNB, RandomForest, and Adaboost. The accuracy of these five algorithms were about 0.8 or higher, with Adaboost &lt; Decision Tree &lt; SVM &lt; GaussianNB &lt; Random Forest. Both SVM and Adaboost had very low precision and recall. Random Forest has low precision and medium recall. GaussianNB had medium score in both precision and recall. Decision Tree had high precision and medium recall. Therefore, although the accuracy looked similar, different algorithm had very different precision and recall scores.</p>
 </div>
 </div>
 <div id="question-4" class="section level2">
@@ -159,7 +244,8 @@ $(document).ready(function () {
 <div id="answer-3" class="section level3">
 <h3>Answer:</h3>
 <p>To tune the parameters means to try different values of certain parameters which are used in an algorithm, in order to select the best parameter combination which can generate the best classifier. Using different values for certain parameters can dramatically change the performance of the algorithm. If it is not done well, the classifier will be more likely to make mistakes when identify POI, which makes it less powerful.</p>
-<p>For the final algorithm I selected which is Deicision Tree, I used GridSearchCV to tune the k value of SelectKBest to select features, and the criterion, max_depth, min_samples_split, and class_weight of Decision Tree classifier.</p>
+<p>For the final algorithm I selected which is Deicision Tree, I used GridSearchCV to tune the k value of SelectKBest to select features (=[5,6,7,8,9,10,11,12,13,14,15,16]), and the criterion (=[‘gini’,‘entropy’]), max_depth (=[None,1,2,3,4]), min_samples_split (=2,3,4,5), and class_weight (=[None, ‘balanced’]) of Decision Tree classifier.</p>
+<p>The selected best estimators were: k=12, max_depth=2, criterion= ‘entropy’, min_samples_split= 2, class_weight= ‘balanced’.</p>
 </div>
 </div>
 <div id="question-5" class="section level2">
@@ -169,7 +255,7 @@ $(document).ready(function () {
 <h3>Answer:</h3>
 <p>After the algorithm is trained, we also want to know how it preforms on some new data which is homogeneous with the train data but not exactly the same. This is because the ultimate goal of an algorithm is not to classify what we have already known as in the train set of data, but to classify or predict what we haven’t known yet. Sometimes the algorithm may perform really well in train set, but it may be overfit to the train data and poor in coping with any differences. Therefore, leave part of the data out of training, and use them to validate the algorithm’s ability in generalization is necessary.</p>
 <p>A classic mistake in validation is that if the original data is ordered in terms of any variable, and when the data is split into train and test sets without shuffling, then the data in the two sets can be very different from each other, and the algorithm tuned in the train set can never generate a good prediction in test set for the two sets are simply different things.</p>
-<p>I used StratifiedShuffleSplit to validate my algorithm. This validation will shuffle the data before split it into train and test sets, thus can avoid the mistake mentioned above.</p>
+<p>I used StratifiedShuffleSplit to validate my algorithm. This validation uses stratification which rearranges the data to make sure that both train and test datasets are good representitives of the whole. This is important because this is a small dataset which is more likely to have larger variance, therefore is more likely to generate not very homogeneous train and test sets compared to a large dataset.</p>
 </div>
 </div>
 <div id="question-6" class="section level2">
@@ -177,7 +263,7 @@ $(document).ready(function () {
 <p>Give at least 2 evaluation metrics and your average performance for each of them. Explain an interpretation of your metrics that says something human-understandable about your algorithm’s performance. [relevant rubric item: “usage of evaluation metrics”]</p>
 <div id="answer-5" class="section level3">
 <h3>Answer:</h3>
-<p>The Deicision Tree classifier gives a precision about 0.30, and a recall score about 0.40. It means that for all the individuals identified as POI by the algorithm, 30% are real POI (precision), and for all the POI in the real world, 40% of them are correctly identified by the algorithm.</p>
+<p>The Deicision Tree classifier gives an accuracy of 0.84, a precision of 0.60, and a recall score of 0.33. It means that for all the employees whose data were used in the machine learning algorithm, 84% of them were correctly classified as POI or non-POI, in terms of the features used in the algorithm. For all the individuals identified as POI by the algorithm, 60% are real POI (precision), and for all the POI in the real world, 33% of them are correctly identified by the algorithm.</p>
 </div>
 </div>
 
